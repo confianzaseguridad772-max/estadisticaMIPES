@@ -3,78 +3,71 @@ const URL_WEB_APP = 'https://script.google.com/macros/s/AKfycbytEYgGRugIClUqJogR
 let dataFull = [];
 let chartInstance = null;
 
-// Función para cargar datos iniciales
 async function loadData() {
     const sheet = document.getElementById('sheetSelect').value;
     const btn = document.getElementById('btnAction');
-    
     btn.innerText = "Cargando...";
-    
+
     try {
         const response = await fetch(`${URL_WEB_APP}?hoja=${sheet}`);
         dataFull = await response.json();
         
-        populateSelectors();
-        btn.innerText = "Consultar";
-    } catch (error) {
-        console.error("Error al cargar:", error);
-        btn.innerText = "Error";
+        if (dataFull.length > 0) {
+            populateSelectors();
+            btn.innerText = "Consultar";
+        }
+    } catch (e) {
+        console.error("Error:", e);
+        btn.innerText = "Error de Enlace";
     }
 }
 
-// Llena los selectores de Grupos y Reuniones dinámicamente
 function populateSelectors() {
-    if (dataFull.length === 0) return;
-
     const groupSelect = document.getElementById('groupSelect');
     const meetingSelect = document.getElementById('meetingSelect');
 
-    // Obtener nombres de grupos únicos (Columna "nombreGrupo")
-    const groups = [...new Set(dataFull.map(item => item.nombreGrupo))].filter(Boolean);
+    // Buscar la columna que contenga la palabra "Grupo"
+    const groupKey = Object.keys(dataFull[0]).find(k => k.toLowerCase().includes("grupo"));
+    
+    // Extraer grupos únicos
+    const groups = [...new Set(dataFull.map(item => item[groupKey]))].filter(Boolean);
     groupSelect.innerHTML = '<option value="">Seleccione Grupo...</option>' + 
         groups.map(g => `<option value="${g}">${g}</option>`).join('');
 
-    // Obtener reuniones (Columnas que contienen un guion '-', ej: Abril-1)
-    const headers = Object.keys(dataFull[0]);
-    const meetings = headers.filter(h => h.includes('-'));
+    // Extraer reuniones (columnas con guion ej. Abril-1)
+    const meetings = Object.keys(dataFull[0]).filter(k => k.includes("-"));
     meetingSelect.innerHTML = '<option value="">Seleccione Reunión...</option>' + 
         meetings.map(m => `<option value="${m}">${m}</option>`).join('');
 }
 
-// Calcula estadísticas al presionar el botón
 function calculateStats() {
     const selectedGroup = document.getElementById('groupSelect').value;
     const selectedMeeting = document.getElementById('meetingSelect').value;
 
-    if (!selectedGroup || !selectedMeeting) {
-        alert("Seleccione Grupo y Reunión");
-        return;
-    }
+    if (!selectedGroup || !selectedMeeting) return alert("Seleccione ambos campos");
 
-    // Filtrar personas que pertenecen al grupo
-    const groupMembers = dataFull.filter(item => item.nombreGrupo === selectedGroup);
-    const totalMembers = groupMembers.length;
-
-    // Contar quiénes tienen valor mayor a 0 en la reunión seleccionada
-    const attendees = groupMembers.filter(m => {
-        const val = parseFloat(m[selectedMeeting]);
-        return val > 0;
+    const groupKey = Object.keys(dataFull[0]).find(k => k.toLowerCase().includes("grupo"));
+    const members = dataFull.filter(item => item[groupKey] === selectedGroup);
+    
+    // Lógica de conteo: cuenta si es "SI" o si es un número mayor a 0
+    const attendees = members.filter(m => {
+        const v = m[selectedMeeting] ? m[selectedMeeting].toString().toUpperCase().trim() : "";
+        return v === "SI" || (!isNaN(v) && parseFloat(v) > 0);
     }).length;
 
-    const missing = totalMembers - attendees;
-    const percentage = totalMembers > 0 ? ((attendees / totalMembers) * 100).toFixed(1) : 0;
+    const total = members.length;
+    const percentage = total > 0 ? ((attendees / total) * 100).toFixed(1) : 0;
 
-    // Actualizar UI
-    document.getElementById('groupMembers').innerText = totalMembers;
+    // Actualizar Tabla de Estadísticas
+    document.getElementById('groupMembers').innerText = total;
     document.getElementById('countReal').innerText = attendees;
-    document.getElementById('attendancePct').innerText = `${percentage}%`;
+    document.getElementById('attendancePct').innerText = percentage + "%";
 
-    updateChart(attendees, missing, selectedGroup);
+    updateChart(attendees, total - attendees, selectedGroup);
 }
 
-function updateChart(attended, missing, groupName) {
+function updateChart(a, f, name) {
     const ctx = document.getElementById('statsChart').getContext('2d');
-    
     if (chartInstance) chartInstance.destroy();
 
     chartInstance = new Chart(ctx, {
@@ -82,20 +75,17 @@ function updateChart(attended, missing, groupName) {
         data: {
             labels: ['Asistieron', 'Faltaron'],
             datasets: [{
-                data: [attended, missing],
-                backgroundColor: ['#27ae60', '#e74c3c'],
-                hoverOffset: 4
+                data: [a, f],
+                backgroundColor: ['#28a745', '#dc3545'],
+                borderWidth: 0
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                title: { display: true, text: `Asistencia de ${groupName}`, font: { size: 18 } }
-            }
+            plugins: { title: { display: true, text: 'Gráfico de Asistencia: ' + name } }
         }
     });
 }
 
-// Carga inicial
 window.onload = loadData;
