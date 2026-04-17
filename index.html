@@ -3,53 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estadísticas de Asistencia GP</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Panel de Estadísticas GP</title>
+    <link rel="stylesheet" href="estilos.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>Panel de Control de Asistencia</h1>
-            <div class="controls">
+            <div class="navbar">
                 <select id="sheetSelect" onchange="loadData()">
                     <option value="Unidad">Hoja: Unidad</option>
                     <option value="Casas">Hoja: Casas</option>
                 </select>
-                
-                <select id="groupSelect">
-                    <option value="">Seleccione Grupo...</option>
-                </select>
-
-                <select id="meetingSelect">
-                    <option value="">Seleccione Reunión...</option>
-                </select>
-
-                <button onclick="calculateStats()" id="btnAction">Consultar</button>
+                <select id="groupSelect"><option value="">Seleccione Grupo...</option></select>
+                <select id="meetingSelect"><option value="">Seleccione Reunión...</option></select>
+                <button id="btnAction" onclick="calculateStats()">Consultar</button>
             </div>
         </header>
 
-        <main>
-            <div class="stats-grid">
-                <div class="card">
-                    <h3>Integrantes del Grupo</h3>
-                    <p id="groupMembers">0</p>
-                </div>
-                <div class="card">
-                    <h3>% Asistencia</h3>
-                    <p id="attendancePct">0%</p>
-                </div>
-                <div class="card">
-                    <h3>Asistentes Reales</h3>
-                    <p id="countReal">0</p>
-                </div>
+        <div class="table-container">
+            <div class="stat-box">
+                <span class="label">Integrantes del Grupo</span>
+                <span class="value" id="groupMembers">0</span>
             </div>
+            <div class="stat-box">
+                <span class="label">% Asistencia</span>
+                <span class="value" id="attendancePct">0%</span>
+            </div>
+            <div class="stat-box">
+                <span class="label">Asistentes Reales</span>
+                <span class="value" id="countReal">0</span>
+            </div>
+        </div>
 
-            <div class="chart-container">
-                <canvas id="statsChart"></canvas>
-            </div>
-        </main>
+        <div class="chart-wrapper">
+            <canvas id="statsChart"></canvas>
+        </div>
     </div>
-    <script src="script.js"></script>
+    <script src="logica.js"></script>
 </body>
 </html>
