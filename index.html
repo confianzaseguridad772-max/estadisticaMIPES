@@ -2,80 +2,51 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Analytics GP | Statistics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Global Analytics GP</title>
     <link rel="stylesheet" href="estilos.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="app-wrapper">
-        <aside class="sidebar">
-            <div class="brand">
-                <div class="logo-icon"></div>
-                <span>DATA<strong>CORE</strong></span>
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">📊 <span>DATA<strong>CORE</strong></span></div>
+            <div class="filter-group">
+                <label>Red de Datos</label>
+                <select id="sheetSelect" onchange="loadData()">
+                    <option value="Unidad">Red Unidad</option>
+                    <option value="Casas">Red Casas</option>
+                </select>
             </div>
-            
-            <div class="sidebar-content">
-                <div class="filter-group">
-                    <label>Red de Datos</label>
-                    <select id="sheetSelect" onchange="loadData()">
-                        <option value="Unidad">Red Unidad</option>
-                        <option value="Casas">Red Casas</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label>Reunión Programada</label>
-                    <select id="meetingSelect">
-                        <option value="">Cargando reuniones...</option>
-                    </select>
-                </div>
-
-                <button id="btnAction" class="btn-primary" onclick="calculateStats()">
-                    <span>Sincronizar Reporte</span>
-                </button>
+            <div class="filter-group">
+                <label>Reunión Programada</label>
+                <select id="meetingSelect"><option value="">Cargando...</option></select>
             </div>
-            
-            <div class="sidebar-footer">
-                v2.0 Premium Analytics
-            </div>
+            <button id="btnAction" class="btn-primary" onclick="calculateStats()">Sincronizar</button>
         </aside>
 
         <main class="content">
             <header class="main-header">
-                <div>
-                    <h1>Dashboard Estadístico</h1>
-                    <p id="currentDate">Análisis comparativo de asistencia por grupos</p>
-                </div>
-                <div id="statusTag" class="badge">Conectado</div>
+                <h2>Dashboard <span id="statusTag" class="badge">...</span></h2>
             </header>
 
             <section class="metrics">
-                <div class="card">
-                    <div class="card-info">
-                        <span class="card-label">Grupos Activos</span>
-                        <h2 id="totalGroups">0</h2>
-                    </div>
-                    <div class="card-icon blue">📊</div>
+                <div class="card blue">
+                    <p>Grupos</p>
+                    <h3 id="totalGroups">0</h3>
                 </div>
-                <div class="card">
-                    <div class="card-info">
-                        <span class="card-label">Promedio Red</span>
-                        <h2 id="avgTotal">0%</h2>
-                    </div>
-                    <div class="card-icon green">📈</div>
+                <div class="card green">
+                    <p>Asistencia %</p>
+                    <h3 id="avgTotal">0%</h3>
                 </div>
-                <div class="card-highlight">
-                    <span class="card-label">Top Performance</span>
-                    <h2 id="topGroup">---</h2>
+                <div class="card dark">
+                    <p>Top GP</p>
+                    <h3 id="topGroup">---</h3>
                 </div>
             </section>
 
             <section class="chart-area">
-                <div class="chart-header">
-                    <h3>Ranking de Asistencia por GP</h3>
-                </div>
                 <div class="canvas-container">
                     <canvas id="statsChart"></canvas>
                 </div>
