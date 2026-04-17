@@ -2,48 +2,44 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Global Analytics GP</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Estadístico GP</title>
     <link rel="stylesheet" href="estilos.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="app-wrapper">
-        <aside class="sidebar" id="sidebar">
-            <div class="brand">📊 <span>DATA<strong>CORE</strong></span></div>
+        <aside class="sidebar">
+            <div class="brand">📊 DATACORE</div>
+            
             <div class="filter-group">
                 <label>Red de Datos</label>
-                <select id="sheetSelect" onchange="loadData()">
+                <select id="sheetSelect" class="form-select" onchange="loadData()">
                     <option value="Unidad">Red Unidad</option>
                     <option value="Casas">Red Casas</option>
                 </select>
             </div>
+
             <div class="filter-group">
                 <label>Reunión Programada</label>
-                <select id="meetingSelect"><option value="">Cargando...</option></select>
+                <select id="meetingSelect" class="form-select">
+                    <option value="">Cargando...</option>
+                </select>
             </div>
-            <button id="btnAction" class="btn-primary" onclick="calculateStats()">Sincronizar</button>
+
+            <button class="btn-primary" onclick="calculateStats()">Sincronizar Datos</button>
         </aside>
 
         <main class="content">
             <header class="main-header">
-                <h2>Dashboard <span id="statusTag" class="badge">...</span></h2>
+                <h2>Dashboard <span id="statusTag" class="badge">Conectando...</span></h2>
             </header>
 
             <section class="metrics">
-                <div class="card blue">
-                    <p>Grupos</p>
-                    <h3 id="totalGroups">0</h3>
-                </div>
-                <div class="card green">
-                    <p>Asistencia %</p>
-                    <h3 id="avgTotal">0%</h3>
-                </div>
-                <div class="card dark">
-                    <p>Top GP</p>
-                    <h3 id="topGroup">---</h3>
-                </div>
+                <div class="card blue"><p>Grupos</p><h3 id="totalGroups">0</h3></div>
+                <div class="card green"><p>Asistencia %</p><h3 id="avgTotal">0%</h3></div>
+                <div class="card dark"><p>Top Performance</p><h3 id="topGroup">---</h3></div>
             </section>
 
             <section class="chart-area">
