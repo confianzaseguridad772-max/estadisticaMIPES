@@ -3,32 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Estadísticas - Asistencia</title>
+    <title>Estadísticas de Asistencia GP</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Estadísticas de Asistencia</h1>
+            <h1>Panel de Control de Asistencia</h1>
             <div class="controls">
-                <select id="sheetSelect">
+                <select id="sheetSelect" onchange="loadData()">
                     <option value="Unidad">Hoja: Unidad</option>
                     <option value="Casas">Hoja: Casas</option>
                 </select>
-                <button onclick="updateDashboard()" id="btnLoad">Actualizar Datos</button>
+                
+                <select id="groupSelect">
+                    <option value="">Seleccione Grupo...</option>
+                </select>
+
+                <select id="meetingSelect">
+                    <option value="">Seleccione Reunión...</option>
+                </select>
+
+                <button onclick="calculateStats()" id="btnAction">Consultar</button>
             </div>
         </header>
 
         <main>
             <div class="stats-grid">
                 <div class="card">
-                    <h3>Total Personas</h3>
-                    <p id="totalCount">0</p>
+                    <h3>Integrantes del Grupo</h3>
+                    <p id="groupMembers">0</p>
                 </div>
                 <div class="card">
-                    <h3>Estado de Conexión</h3>
-                    <p id="status" style="color: #27ae60;">Listo</p>
+                    <h3>% Asistencia</h3>
+                    <p id="attendancePct">0%</p>
+                </div>
+                <div class="card">
+                    <h3>Asistentes Reales</h3>
+                    <p id="countReal">0</p>
                 </div>
             </div>
 
