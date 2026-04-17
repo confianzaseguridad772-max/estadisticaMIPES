@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi lugar en el GP - Tingo María</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-card">
+            <h1 class="header-title">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon">
+                    <path d="M18 21V19C18 17.9391 17.5786 16.9217 16.8284 16.1716C16.0783 15.4214 15.0609 15 14 15H10C8.93913 15 7.92172 15.4214 7.17157 16.1716C6.42143 16.9217 6 17.9391 6 19V21" stroke="#00f2ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="12" cy="7" r="4" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M22 21V19C21.9993 18.1137 21.7044 17.2528 22.1614 16.5523" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round"/>
+                    <path d="M2 21V19C2.00066 18.1137 2.29556 17.2528 2.83861 16.5523" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round"/>
+                </svg>
+                <span class="title-text">Vamos al GP</span>
+            </h1>
+            
+            <p class="subtitle">IASD Central - Tingo María</p>
+            
+            <div class="input-grid">
+                <div class="group"><label class="top-label">DNI</label><input type="text" id="dni" class="main-input" maxlength="8" placeholder="8 dígitos"></div>
+                <div class="group"><label class="top-label">Nombres</label><input type="text" id="nombres" class="main-input"></div>
+                <div class="group"><label class="top-label">Ap. Paterno</label><input type="text" id="apPaterno" class="main-input"></div>
+                <div class="group"><label class="top-label">Ap. Materno</label><input type="text" id="apMaterno" class="main-input"></div>
+                <div class="group"><label class="top-label">Nacimiento</label><input type="date" id="fechaNac" class="main-input"></div>
+                <div class="group">
+                    <label class="top-label">Sexo</label>
+                    <select id="sexo" class="main-input">
+                        <option value="FEMENINO">FEMENINO</option>
+                        <option value="MASCULINO">MASCULINO</option>
+                    </select>
+                </div>
+                <div class="group"><label class="top-label">Celular</label><input type="text" id="celular" class="main-input" maxlength="9"></div>
+                <div class="group"><label class="top-label">Dirección</label><input type="text" id="direccion" class="main-input"></div>
+                
+                <div class="group">
+                    <label class="top-label">Tipo de Miembro</label>
+                    <select id="tipo" class="main-input">
+                        <option value="Bautizado">Bautizado</option>
+                        <option value="Amigo de esperanza">Amigo de esperanza</option>
+                    </select>
+                </div>
+                <div class="group">
+                    <label class="top-label">Líder GP</label>
+                    <select id="liderGp" class="main-input">
+                        <option value="1-Cherry">1-Cherry</option>
+                        <option value="2-Raquel">2-Raquel</option>
+                        <option value="3-Tito">3-Tito</option>
+                        <option value="4-Ricardo">4-Ricardo</option>
+                        <option value="5-Rosario-Charito">5-Rosario-Charito</option>
+                        <option value="6-Pedro">6-Pedro</option>
+                        <option value="7-Erika">7-Erika</option>
+                         <option value="8-Jafet">8-Jafet</option>
+                          <option value="9-Gustabo">9-Gustabo</option>
+                    </select>
+                </div>
+            </div>
+
+            <button onclick="enviarAlPadron()" class="btn-final" id="btnGuardar">GUARDAR⚡</button>
+        </div>
+    </div>
+    <script src="logica.js"></script>
+</body>
+</html>
