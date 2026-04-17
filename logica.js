@@ -1,123 +1,79 @@
-// REEMPLAZA ESTA URL CON LA TUYA DE GOOGLE APPS SCRIPT
-const URL_GOOGLE = "https://script.google.com/macros/s/AKfycbwejLeWqUfmYGx49YOetmCSdJUso_Tfoz6y_arcFfVM_93CjZQq1Ocg2uG993bJ6NUOug/exec"; 
+const SHEET_ID = '1B7mzaX28g9lmvGMJ2xy9BmuEUabgK3IY0XpSRyTHc1M';
+const GID = '1469617527';
+const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${GID}`;
 
-async function enviarAlPadron() {
-    const btn = document.getElementById('btnGuardar');
-    
-    // Captura de datos
-    const campos = {
-        dni: document.getElementById('dni').value.trim(),
-        nombres: document.getElementById('nombres').value.trim(),
-        apPaterno: document.getElementById('apPaterno').value.trim(),
-        apMaterno: document.getElementById('apMaterno').value.trim(),
-        fecha: document.getElementById('fechaNac').value,
-        sexo: document.getElementById('sexo').value,
-        celular: document.getElementById('celular').value.trim(),
-        direccion: document.getElementById('direccion').value.trim(),
-        tipo: document.getElementById('tipo').value,
-        lider: document.getElementById('liderGp').value
-    };
+let myChart;
 
-    // Validación de campos vacíos
-    if (Object.values(campos).some(v => v === "")) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Datos incompletos',
-            text: 'Por favor, llena todos los campos.',
-            background: '#080b12',
-            color: '#ffffff',
-            confirmButtonColor: '#7000ff'
-        });
-        return;
-    }
-
-    // Validación DNI 8 dígitos
-    if (campos.dni.length !== 8 || isNaN(campos.dni)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'DNI inválido',
-            text: 'DNI incompleto',
-            background: '#080b12',
-            color: '#ffffff',
-            confirmButtonColor: '#7000ff'
-        });
-        return;
-    }
-
-    btn.innerText = "Paciencia 🔍";
-    btn.disabled = true;
-
+async function fetchData() {
     try {
-        // 1. VERIFICACIÓN DE DUPLICADO
-        const respuesta = await fetch(`${URL_GOOGLE}?dni=${campos.dni}`);
-        const resultado = await respuesta.text();
-
-        if (resultado.startsWith("existe")) {
-            const nombreLiderRegistrado = resultado.split(":")[1] || "Otro Líder";
-            
-            Swal.fire({
-                icon: 'info',
-                title: 'Felicidades',
-                html: `Su líder de GP es: <b>${nombreLiderRegistrado}</b>.<br><br>Ve en Paz.`,
-                background: '#080b12',
-                color: '#ffffff',
-                confirmButtonColor: '#00f2ff',
-                confirmButtonText: 'Okis'
-            }).then(() => {
-                location.reload();
-            });
-            return;
-        }
-
-        // 2. PREPARAR DATOS PARA ENVÍO
-        const p = campos.fecha.split("-");
-        const fechaFormat = `${p[2]}/${p[1]}/${p[0]}`; // Formato DD/MM/AAAA
-
-        const datosFinales = {
-            destino: "PADRON",
-            DNI: campos.dni,
-            Nombres: campos.nombres,
-            ApPaterno: campos.apPaterno,
-            ApMaterno: campos.apMaterno,
-            fechaNac: fechaFormat,
-            Sexo: campos.sexo,
-            Celular: campos.celular,
-            Direccion: campos.direccion,
-            Tipo: campos.tipo,
-            LiderGp: campos.lider
-        };
-
-        // 3. ENVÍO FINAL
-        btn.innerText = "GUARDANDO... 💾";
-        await fetch(URL_GOOGLE, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(datosFinales)
-        });
-
-        // 4. ALERTA DE ÉXITO
-        Swal.fire({
-            icon: 'success',
-            title: '¡Bienvenido al GP!',
-            text: 'Verdadero Discípulo',
-            background: '#080b12',
-            color: '#ffffff',
-            showConfirmButton: false,
-            timer: 2500
-        }).then(() => {
-            location.reload();
-        });
-
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error de conexión',
-            text: 'No se pudo conectar con el servidor. Inténtalo de nuevo.',
-            background: '#080b12',
-            color: '#ffffff',
-            confirmButtonColor: '#ff0055'
-        });
-        btn.disabled = false;
-        btn.innerText = "GUARDAR⚡";
+        const response = await fetch(URL);
+        const csvData = await response.text();
+        return parseCSV(csvData);
+    } catch (e) {
+        console.error("Error cargando datos:", e);
+        return [];
     }
 }
+
+function parseCSV(csv) {
+    const lines = csv.split('\n');
+    const result = [];
+    const headers = lines[0].split(',');
+
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        const obj = {};
+        const currentline = lines[i].split(',');
+        headers.forEach((header, j) => {
+            obj[header.trim()] = currentline[j]?.trim();
+        });
+        result.push(obj);
+    }
+    return result;
+}
+
+async function updateDashboard() {
+    const data = await fetchData();
+    const type = document.getElementById('queryType').value;
+    
+    document.getElementById('totalCount').innerText = data.length;
+
+    // Supongamos que tu Excel tiene columnas como 'Sector', 'Fecha', 'Asistencia'
+    // Ajustaremos la lógica según los datos detectados
+    const firstColumn = Object.keys(data[0])[0];
+    const labels = [...new Set(data.map(item => item[firstColumn]))].slice(0, 15);
+    const values = labels.map(label => data.filter(item => item[firstColumn] === label).length);
+
+    renderChart(labels, values, `Distribución por ${firstColumn}`);
+}
+
+function renderChart(labels, values, title) {
+    const ctx = document.getElementById('statsChart').getContext('2d');
+    
+    if (myChart) myChart.destroy();
+
+    myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Cantidad de Registros',
+                data: values,
+                backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                borderColor: 'rgba(52, 152, 219, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' },
+                title: { display: true, text: title }
+            }
+        }
+    });
+}
+
+// Carga inicial
+window.onload = updateDashboard;
