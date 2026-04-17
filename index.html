@@ -3,33 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estadísticas de Asistencia</title>
+    <title>Panel de Estadísticas - Asistencia</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Dashboard de Asistencia</h1>
+            <h1>Estadísticas de Asistencia</h1>
             <div class="controls">
-                <select id="queryType">
-                    <option value="general">Resumen General</option>
-                    <option value="sector">Asistencia por Sector</option>
-                    <option value="fecha">Tendencia por Fecha</option>
+                <select id="sheetSelect">
+                    <option value="Unidad">Hoja: Unidad</option>
+                    <option value="Casas">Hoja: Casas</option>
                 </select>
-                <button onclick="updateDashboard()">Actualizar</button>
+                <button onclick="updateDashboard()" id="btnLoad">Actualizar Datos</button>
             </div>
         </header>
 
         <main>
             <div class="stats-grid">
                 <div class="card">
-                    <h3>Total Registros</h3>
-                    <p id="totalCount">-</p>
+                    <h3>Total Personas</h3>
+                    <p id="totalCount">0</p>
                 </div>
                 <div class="card">
-                    <h3>Estado del Sistema</h3>
-                    <p id="systemStatus" style="color: #27ae60;">Activo</p>
+                    <h3>Estado de Conexión</h3>
+                    <p id="status" style="color: #27ae60;">Listo</p>
                 </div>
             </div>
 
