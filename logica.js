@@ -1,96 +1,108 @@
 const URL_WEB_APP = 'https://script.google.com/macros/s/AKfycbytEYgGRugIClUqJogRkyjqz2K1wAfB7ZQoRpehr_cdmQHlOpD5NjjHKSR-_OeQ4a52/exec';
 
-let dataFull = [];
-let chartInstance = null;
+let rawData = [];
+let myChart = null;
 
+// Carga inicial al entrar
 async function loadData() {
     const sheet = document.getElementById('sheetSelect').value;
-    const status = document.getElementById('statusIndicator');
-    
-    status.innerText = "Cargando...";
-    status.style.background = "#feebcb";
+    const status = document.getElementById('statusTag');
+    status.innerText = "Sincronizando...";
+    status.style.background = "#fef9c3";
 
     try {
         const response = await fetch(`${URL_WEB_APP}?hoja=${sheet}`);
-        dataFull = await response.json();
+        rawData = await response.json();
         
-        if (dataFull.length > 0) {
-            populateMeetingSelector();
-            status.innerText = "Datos Sincronizados";
-            status.style.background = "#c6f6d5";
+        if (rawData.length > 0) {
+            updateMeetingOptions();
+            status.innerText = "Conectado";
+            status.style.background = "#dcfce7";
         }
-    } catch (e) {
-        status.innerText = "Error de Conexión";
-        status.style.background = "#fed7d7";
+    } catch (error) {
+        status.innerText = "Error de Red";
+        status.style.background = "#fee2e2";
     }
 }
 
-function populateMeetingSelector() {
-    const meetingSelect = document.getElementById('meetingSelect');
-    const meetings = Object.keys(dataFull[0]).filter(k => k.includes("-"));
-    meetingSelect.innerHTML = meetings.map(m => `<option value="${m}">${m}</option>`).join('');
+function updateMeetingOptions() {
+    const selector = document.getElementById('meetingSelect');
+    // Filtra los encabezados que son de reunión (ej. Abril-1, Mayo-2)
+    const headers = Object.keys(rawData[0]).filter(k => k.includes('-'));
+    selector.innerHTML = headers.map(h => `<option value="${h}">${h}</option>`).join('');
 }
 
 function calculateStats() {
-    const selectedMeeting = document.getElementById('meetingSelect').value;
-    const groupKey = Object.keys(dataFull[0]).find(k => k.toLowerCase().includes("grupo"));
-    
-    const statsByGroup = {};
+    const meeting = document.getElementById('meetingSelect').value;
+    if (!meeting) return alert("Selecciona una reunión");
 
-    dataFull.forEach(row => {
-        const groupName = row[groupKey] || "Indefinido";
-        if (!statsByGroup[groupName]) statsByGroup[groupName] = { total: 0, asist: 0 };
+    const groupKey = Object.keys(rawData[0]).find(k => k.toLowerCase().includes("grupo"));
+    const stats = {};
+
+    rawData.forEach(row => {
+        const groupName = row[groupKey] || "Sin Grupo";
+        if (!stats[groupName]) stats[groupName] = { total: 0, present: 0 };
+
+        stats[groupName].total++;
         
-        statsByGroup[groupName].total++;
-        const val = row[selectedMeeting]?.toString().toUpperCase().trim();
+        const val = row[meeting] ? row[meeting].toString().toUpperCase().trim() : "";
+        // Lógica: Cuenta si es "SI" o si es un número mayor a 0
         if (val === "SI" || (!isNaN(val) && parseFloat(val) > 0)) {
-            statsByGroup[groupName].asist++;
+            stats[groupName].present++;
         }
     });
 
-    const labels = Object.keys(statsByGroup);
-    const percentages = labels.map(group => {
-        const g = statsByGroup[group];
-        return ((g.asist / g.total) * 100).toFixed(1);
+    const labels = Object.keys(stats);
+    const dataValues = labels.map(label => {
+        const g = stats[label];
+        return ((g.present / g.total) * 100).toFixed(1);
     });
 
-    // Actualizar Tarjetas
+    // Actualizar Tarjetas de Resumen
     document.getElementById('totalGroups').innerText = labels.length;
-    const avg = (percentages.reduce((a, b) => parseFloat(a) + parseFloat(b), 0) / labels.length).toFixed(1);
-    document.getElementById('avgTotal').innerText = avg + "%";
     
-    // Encontrar el mejor grupo
-    const maxVal = Math.max(...percentages);
-    const bestGroup = labels[percentages.indexOf(maxVal.toFixed(1))];
-    document.getElementById('topGroup').innerText = bestGroup;
+    const avg = (dataValues.reduce((a, b) => parseFloat(a) + parseFloat(b), 0) / labels.length).toFixed(1);
+    document.getElementById('avgTotal').innerText = avg + "%";
 
-    updateChart(labels, percentages, selectedMeeting);
+    const topVal = Math.max(...dataValues);
+    const bestGroup = labels[dataValues.indexOf(topVal.toFixed(1))];
+    document.getElementById('topGroup').innerText = bestGroup || "---";
+
+    renderChart(labels, dataValues);
 }
 
-function updateChart(labels, data, meeting) {
+function renderChart(labels, values) {
     const ctx = document.getElementById('statsChart').getContext('2d');
-    if (chartInstance) chartInstance.destroy();
+    if (myChart) myChart.destroy();
 
-    chartInstance = new Chart(ctx, {
+    // Gradiente moderno para las barras
+    const gradient = ctx.createLinearGradient(0, 0, 400, 0);
+    gradient.addColorStop(0, '#4f46e5');
+    gradient.addColorStop(1, '#818cf8');
+
+    myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
                 label: '% Asistencia',
-                data: data,
-                backgroundColor: 'rgba(49, 130, 206, 0.8)',
-                borderRadius: 8,
-                barThickness: 20
+                data: values,
+                backgroundColor: gradient,
+                borderRadius: 10,
+                borderSkipped: false,
+                barThickness: 15
             }]
         },
         options: {
-            indexAxis: 'y',
+            indexAxis: 'y', // Barras horizontales para elegancia
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
+            plugins: {
+                legend: { display: false }
+            },
             scales: {
-                x: { max: 100, grid: { display: false } },
-                y: { grid: { display: false } }
+                x: { max: 100, grid: { display: false }, ticks: { color: '#94a3b8' } },
+                y: { grid: { display: false }, ticks: { color: '#475569', font: { weight: '600' } } }
             }
         }
     });
