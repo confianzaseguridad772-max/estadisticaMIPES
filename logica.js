@@ -6,53 +6,63 @@ let myChart = null;
 async function loadData() {
     const sheet = document.getElementById('sheetSelect').value;
     const status = document.getElementById('statusTag');
-    status.innerText = "Cargando...";
-    status.style.background = "#fef9c3";
+    status.innerText = "Sincronizando...";
+    status.className = "badge warning";
 
     try {
-        // Agregamos un proxy de caché vacío para evitar bloqueos en algunos móviles
         const response = await fetch(`${URL_WEB_APP}?hoja=${sheet}`);
         const text = await response.text();
         rawData = JSON.parse(text);
         
         if (rawData.length > 0) {
             updateMeetingOptions();
-            status.innerText = "Sincronizado";
-            status.style.background = "#dcfce7";
-            status.style.color = "#166534";
+            status.innerText = "Conectado";
+            status.className = "badge success";
         }
     } catch (error) {
-        console.error("Error:", error);
         status.innerText = "Error de Enlace";
-        status.style.background = "#fee2e2";
-        status.style.color = "#991b1b";
+        status.className = "badge danger";
     }
 }
 
 function updateMeetingOptions() {
     const selector = document.getElementById('meetingSelect');
-    // Buscamos columnas como Abril-1, Mayo-2 basándonos en tu captura
     const headers = Object.keys(rawData[0]).filter(k => k.includes('-'));
-    selector.innerHTML = headers.map(h => `<option value="${h}">${h}</option>`).join('');
+    
+    // Agrupar por Mes
+    const groups = {};
+    headers.forEach(h => {
+        const [mes, num] = h.split('-');
+        if (!groups[mes]) groups[mes] = [];
+        groups[mes].push({ full: h, label: `Semana-${num}` });
+    });
+
+    let html = '<option value="">Seleccione Reunión...</option>';
+    for (const mes in groups) {
+        html += `<optgroup label="${mes}">`;
+        groups[mes].forEach(item => {
+            html += `<option value="${item.full}">${item.label}</option>`;
+        });
+        html += `</optgroup>`;
+    }
+    selector.innerHTML = html;
 }
 
 function calculateStats() {
     const meeting = document.getElementById('meetingSelect').value;
     if (!meeting || rawData.length === 0) return;
 
-    // Buscamos la columna que diga "Grupo" ignorando mayúsculas/espacios
     const groupKey = Object.keys(rawData[0]).find(k => k.toLowerCase().replace(/\s/g, '').includes("grupo"));
     const stats = {};
 
     rawData.forEach(row => {
         const groupName = row[groupKey] || "Sin Grupo";
-        if (groupName === "sn" || groupName === "") return; // Ignorar vacíos
+        if (groupName === "sn" || groupName === "") return;
 
         if (!stats[groupName]) stats[groupName] = { total: 0, present: 0 };
         stats[groupName].total++;
         
         const val = row[meeting] ? row[meeting].toString().toUpperCase().trim() : "";
-        // Detecta "SI" o números mayores a 0 según tus dos imágenes
         if (val === "SI" || (!isNaN(val) && parseFloat(val) > 0)) {
             stats[groupName].present++;
         }
@@ -74,7 +84,6 @@ function calculateStats() {
 function renderChart(labels, values) {
     const ctx = document.getElementById('statsChart').getContext('2d');
     if (myChart) myChart.destroy();
-
     myChart = new Chart(ctx, {
         type: 'bar',
         data: {
