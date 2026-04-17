@@ -3,43 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Estadísticas GP</title>
+    <title>Analytics Pro | Control de Asistencia</title>
     <link rel="stylesheet" href="estilos.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Panel de Control de Asistencia</h1>
-            <div class="navbar">
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">📊 Analytics<span>GP</span></div>
+            <nav>
+                <div class="nav-item active">Dashboard General</div>
+            </nav>
+            <div class="filters">
+                <label>Fuente de Datos</label>
                 <select id="sheetSelect" onchange="loadData()">
-                    <option value="Unidad">Hoja: Unidad</option>
-                    <option value="Casas">Hoja: Casas</option>
+                    <option value="Unidad">Red Unidad</option>
+                    <option value="Casas">Red Casas</option>
                 </select>
-                <select id="groupSelect"><option value="">Seleccione Grupo...</option></select>
-                <select id="meetingSelect"><option value="">Seleccione Reunión...</option></select>
-                <button id="btnAction" onclick="calculateStats()">Consultar</button>
+                
+                <label>Periodo de Análisis</label>
+                <select id="meetingSelect">
+                    <option value="">Cargando fechas...</option>
+                </select>
+                
+                <button id="btnAction" onclick="calculateStats()">Generar Reporte</button>
             </div>
-        </header>
+        </aside>
 
-        <div class="table-container">
-            <div class="stat-box">
-                <span class="label">Integrantes del Grupo</span>
-                <span class="value" id="groupMembers">0</span>
-            </div>
-            <div class="stat-box">
-                <span class="label">% Asistencia</span>
-                <span class="value" id="attendancePct">0%</span>
-            </div>
-            <div class="stat-box">
-                <span class="label">Asistentes Reales</span>
-                <span class="value" id="countReal">0</span>
-            </div>
-        </div>
+        <main class="main-content">
+            <header class="top-bar">
+                <h2>Comparativo de Rendimiento por Grupos</h2>
+                <div id="statusIndicator" class="status">Sincronizado</div>
+            </header>
 
-        <div class="chart-wrapper">
-            <canvas id="statsChart"></canvas>
-        </div>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="icon">👥</span>
+                    <div>
+                        <p class="metric-label">Grupos Analizados</p>
+                        <h3 id="totalGroups">0</h3>
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <span class="icon">📈</span>
+                    <div>
+                        <p class="metric-label">Promedio de Asistencia</p>
+                        <h3 id="avgTotal">0%</h3>
+                    </div>
+                </div>
+                <div class="metric-card highlight">
+                    <span class="icon">⭐</span>
+                    <div>
+                        <p class="metric-label">Mejor Rendimiento</p>
+                        <h3 id="topGroup">---</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="chart-header">
+                    <h4>Ranking de Asistencia (%)</h4>
+                </div>
+                <div class="chart-container">
+                    <canvas id="statsChart"></canvas>
+                </div>
+            </div>
+        </main>
     </div>
     <script src="logica.js"></script>
 </body>
