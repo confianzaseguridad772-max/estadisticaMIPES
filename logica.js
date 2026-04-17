@@ -5,85 +5,93 @@ let chartInstance = null;
 
 async function loadData() {
     const sheet = document.getElementById('sheetSelect').value;
-    const btn = document.getElementById('btnAction');
-    btn.innerText = "Cargando...";
+    const status = document.getElementById('statusIndicator');
+    
+    status.innerText = "Cargando...";
+    status.style.background = "#feebcb";
 
     try {
         const response = await fetch(`${URL_WEB_APP}?hoja=${sheet}`);
         dataFull = await response.json();
         
         if (dataFull.length > 0) {
-            populateSelectors();
-            btn.innerText = "Consultar";
+            populateMeetingSelector();
+            status.innerText = "Datos Sincronizados";
+            status.style.background = "#c6f6d5";
         }
     } catch (e) {
-        console.error("Error:", e);
-        btn.innerText = "Error de Enlace";
+        status.innerText = "Error de Conexión";
+        status.style.background = "#fed7d7";
     }
 }
 
-function populateSelectors() {
-    const groupSelect = document.getElementById('groupSelect');
+function populateMeetingSelector() {
     const meetingSelect = document.getElementById('meetingSelect');
-
-    // Buscar la columna que contenga la palabra "Grupo"
-    const groupKey = Object.keys(dataFull[0]).find(k => k.toLowerCase().includes("grupo"));
-    
-    // Extraer grupos únicos
-    const groups = [...new Set(dataFull.map(item => item[groupKey]))].filter(Boolean);
-    groupSelect.innerHTML = '<option value="">Seleccione Grupo...</option>' + 
-        groups.map(g => `<option value="${g}">${g}</option>`).join('');
-
-    // Extraer reuniones (columnas con guion ej. Abril-1)
     const meetings = Object.keys(dataFull[0]).filter(k => k.includes("-"));
-    meetingSelect.innerHTML = '<option value="">Seleccione Reunión...</option>' + 
-        meetings.map(m => `<option value="${m}">${m}</option>`).join('');
+    meetingSelect.innerHTML = meetings.map(m => `<option value="${m}">${m}</option>`).join('');
 }
 
 function calculateStats() {
-    const selectedGroup = document.getElementById('groupSelect').value;
     const selectedMeeting = document.getElementById('meetingSelect').value;
-
-    if (!selectedGroup || !selectedMeeting) return alert("Seleccione ambos campos");
-
     const groupKey = Object.keys(dataFull[0]).find(k => k.toLowerCase().includes("grupo"));
-    const members = dataFull.filter(item => item[groupKey] === selectedGroup);
     
-    // Lógica de conteo: cuenta si es "SI" o si es un número mayor a 0
-    const attendees = members.filter(m => {
-        const v = m[selectedMeeting] ? m[selectedMeeting].toString().toUpperCase().trim() : "";
-        return v === "SI" || (!isNaN(v) && parseFloat(v) > 0);
-    }).length;
+    const statsByGroup = {};
 
-    const total = members.length;
-    const percentage = total > 0 ? ((attendees / total) * 100).toFixed(1) : 0;
+    dataFull.forEach(row => {
+        const groupName = row[groupKey] || "Indefinido";
+        if (!statsByGroup[groupName]) statsByGroup[groupName] = { total: 0, asist: 0 };
+        
+        statsByGroup[groupName].total++;
+        const val = row[selectedMeeting]?.toString().toUpperCase().trim();
+        if (val === "SI" || (!isNaN(val) && parseFloat(val) > 0)) {
+            statsByGroup[groupName].asist++;
+        }
+    });
 
-    // Actualizar Tabla de Estadísticas
-    document.getElementById('groupMembers').innerText = total;
-    document.getElementById('countReal').innerText = attendees;
-    document.getElementById('attendancePct').innerText = percentage + "%";
+    const labels = Object.keys(statsByGroup);
+    const percentages = labels.map(group => {
+        const g = statsByGroup[group];
+        return ((g.asist / g.total) * 100).toFixed(1);
+    });
 
-    updateChart(attendees, total - attendees, selectedGroup);
+    // Actualizar Tarjetas
+    document.getElementById('totalGroups').innerText = labels.length;
+    const avg = (percentages.reduce((a, b) => parseFloat(a) + parseFloat(b), 0) / labels.length).toFixed(1);
+    document.getElementById('avgTotal').innerText = avg + "%";
+    
+    // Encontrar el mejor grupo
+    const maxVal = Math.max(...percentages);
+    const bestGroup = labels[percentages.indexOf(maxVal.toFixed(1))];
+    document.getElementById('topGroup').innerText = bestGroup;
+
+    updateChart(labels, percentages, selectedMeeting);
 }
 
-function updateChart(a, f, name) {
+function updateChart(labels, data, meeting) {
     const ctx = document.getElementById('statsChart').getContext('2d');
     if (chartInstance) chartInstance.destroy();
 
     chartInstance = new Chart(ctx, {
-        type: 'doughnut',
+        type: 'bar',
         data: {
-            labels: ['Asistieron', 'Faltaron'],
+            labels: labels,
             datasets: [{
-                data: [a, f],
-                backgroundColor: ['#28a745', '#dc3545'],
-                borderWidth: 0
+                label: '% Asistencia',
+                data: data,
+                backgroundColor: 'rgba(49, 130, 206, 0.8)',
+                borderRadius: 8,
+                barThickness: 20
             }]
         },
         options: {
+            indexAxis: 'y',
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { title: { display: true, text: 'Gráfico de Asistencia: ' + name } }
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { max: 100, grid: { display: false } },
+                y: { grid: { display: false } }
+            }
         }
     });
 }
