@@ -7,10 +7,12 @@ async function loadData() {
     const status = document.getElementById('statusTag');
     status.innerText = "Sincronizando...";
     status.className = "badge warning";
+
     try {
         const response = await fetch(`${URL_WEB_APP}?hoja=${sheet}`);
         const text = await response.text();
         rawData = JSON.parse(text);
+        
         if (rawData.length > 0) {
             status.innerText = "Conectado";
             status.className = "badge success";
@@ -26,9 +28,9 @@ function calculateStats() {
     const meeting = document.getElementById('semana').value;
     if (!meeting || rawData.length === 0) return;
 
-    // Detectar columnas automáticamente
-    const groupKey = Object.keys(rawData[0]).find(k => k.toLowerCase().includes("grupo"));
-    const condicionKey = Object.keys(rawData[0]).find(k => k.toLowerCase().includes("condición") || k.toLowerCase().includes("tipo"));
+    const headers = Object.keys(rawData[0]);
+    const groupKey = headers.find(k => k.toLowerCase().includes("grupo"));
+    const condicionKey = headers.find(k => k.toLowerCase().includes("condición") || k.toLowerCase().includes("tipo"));
 
     const stats = {};
 
@@ -44,21 +46,31 @@ function calculateStats() {
             };
         }
 
-        const isPresent = (row[meeting]?.toString().toUpperCase().trim() === "SI" || parseFloat(row[meeting]) > 0);
-        const condicion = row[condicionKey]?.toString().toLowerCase().trim() || "";
+        const val = row[meeting] ? row[meeting].toString().toUpperCase().trim() : "";
+        const isPresent = (val === "SI" || (!isNaN(val) && parseFloat(val) > 0));
+        const condicion = row[condicionKey] ? row[condicionKey].toString().toLowerCase().trim() : "";
 
         stats[groupName].total++;
         if (isPresent) stats[groupName].present++;
 
-        // Lógica por condición
         if (condicion.includes("bautizado")) {
             stats[groupName].bautizadosTotal++;
             if (isPresent) stats[groupName].bautizadosPresent++;
-        } else if (condicion.includes("amigo") || condicion.includes("esperanza")) {
+        } else {
             stats[groupName].amigosTotal++;
             if (isPresent) stats[groupName].amigosPresent++;
         }
     });
+
+    const labels = Object.keys(stats);
+    const totalPercents = labels.map(l => (stats[l].present / stats[l].total) * 100);
+
+    document.getElementById('totalGroups').innerText = labels.length;
+    const avg = (totalPercents.reduce((a, b) => a + b, 0) / (labels.length || 1)).toFixed(1);
+    document.getElementById('avgTotal').innerText = avg + "%";
+    
+    const topVal = Math.max(...totalPercents);
+    document.getElementById('topGroup').innerText = labels[totalPercents.indexOf(topVal)] || "---";
 
     renderMultipleGauges(stats);
 }
@@ -85,13 +97,13 @@ function renderMultipleGauges(stats) {
                 <span class="name">${group}</span>
             </div>
             <div class="mini-bar-container">
-                <div class="mini-bar bautizados" style="width: 50%">
+                <div class="mini-bar bautizados">
                     <span class="val">${pBautizados}%</span>
-                    <span class="lbl">Bautizados</span>
+                    <span class="lbl">Bautizado</span>
                 </div>
-                <div class="mini-bar amigos" style="width: 50%">
+                <div class="mini-bar amigos">
                     <span class="val">${pAmigos}%</span>
-                    <span class="lbl">Amigos</span>
+                    <span class="lbl">Amigos de Esperanza</span>
                 </div>
             </div>
         `;
@@ -109,7 +121,12 @@ function renderMultipleGauges(stats) {
                     rotation: 270
                 }]
             },
-            options: { cutout: '80%', responsive: true, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
+            options: {
+                cutout: '80%',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
+            }
         });
         chartInstances.push(chart);
         i++;
