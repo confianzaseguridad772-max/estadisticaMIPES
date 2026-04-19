@@ -1,13 +1,13 @@
-/* --- VARIABLES Y PALETA DE COLORES --- */
+/* --- VARIABLES Y CONFIGURACIÓN --- */
 :root {
     --primary: #4f46e5;
     --dark: #1e293b;
     --bg: #f8fafc;
-    --naranja-modelo: #fbd38d; /* Bautizados */
-    --amarillo-modelo: #fefcbf; /* Amigos de Esperanza */
+    --naranja-modelo: #fbd38d; /* Color Bautizados */
+    --amarillo-modelo: #fefcbf; /* Color Amigos */
+    --verde-modelo: #10b981;   /* Color Estudio Lección */
     --text-muted: #64748b;
-    --shadow-sm: 0 4px 6px rgba(0,0,0,0.02);
-    --shadow-lg: 0 10px 25px rgba(0,0,0,0.05);
+    --shadow-premium: 0 10px 25px rgba(0,0,0,0.05);
 }
 
 * { 
@@ -20,10 +20,10 @@
 body { 
     background: var(--bg); 
     color: var(--dark);
-    overflow-x: hidden;
+    line-height: 1.5;
 }
 
-/* --- ESTRUCTURA (LAYOUT) --- */
+/* --- LAYOUT PRINCIPAL --- */
 .app-wrapper { 
     display: flex; 
     flex-direction: column; 
@@ -80,23 +80,15 @@ body {
     font-size: 14px;
 }
 
-.form-select:focus { 
-    border-color: var(--primary); 
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
-}
+.form-select:focus { border-color: var(--primary); }
 
-/* --- ÁREA DE CONTENIDO --- */
+/* --- CONTENIDO --- */
 .content { flex: 1; padding: 40px; }
-
-.main-header { margin-bottom: 35px; }
-.main-header h2 { font-size: 26px; display: flex; align-items: center; gap: 15px; }
 
 .badge { font-size: 12px; padding: 6px 16px; border-radius: 30px; font-weight: 600; }
 .badge.success { background: #dcfce7; color: #166534; }
 .badge.warning { background: #fef9c3; color: #854d0e; }
-.badge.danger { background: #fee2e2; color: #991b1b; }
 
-/* TARJETAS DE MÉTRICAS SUPERIORES */
 .metrics { 
     display: grid; 
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
@@ -108,21 +100,16 @@ body {
     background: white; 
     padding: 25px; 
     border-radius: 20px; 
-    box-shadow: var(--shadow-sm);
-    border-left: 6px solid transparent;
-    transition: transform 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
+    border-left: 6px solid transparent; 
 }
-
-.card:hover { transform: translateY(-5px); }
 .card.blue { border-left-color: #3b82f6; }
 .card.green { border-left-color: #10b981; }
 .card.dark { background: var(--dark); color: white; border-left-color: var(--primary); }
-
-.card p { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
-.card.dark p { color: #94a3b8; }
+.card p { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
 .card h3 { font-size: 28px; font-weight: 700; }
 
-/* --- DISEÑO DE GRÁFICOS (GAUGES + BARRAS) --- */
+/* --- GRÁFICOS (GAUGES + BARRAS) --- */
 .charts-grid { 
     display: grid; 
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
@@ -131,95 +118,74 @@ body {
 
 .gauge-item { 
     background: white; 
-    padding: 35px 25px; 
+    padding: 30px 20px; 
     border-radius: 30px; 
-    box-shadow: var(--shadow-lg); 
+    box-shadow: var(--shadow-premium); 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: 0.3s ease;
+    min-height: 410px; /* Espacio extra para la barra del reto */
 }
 
-.gauge-item:hover { 
-    transform: translateY(-12px); 
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
-}
+.gauge-item:hover { transform: translateY(-10px); }
 
-canvas { 
-    max-height: 160px; 
-    width: 100% !important; 
-    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.05));
-}
+canvas { max-height: 160px; width: 100% !important; }
 
 .gauge-info { 
-    margin-top: -55px; /* Ajuste para centrar texto en el arco */
+    margin-top: -55px; 
     text-align: center; 
     margin-bottom: 25px; 
-    position: relative;
-    z-index: 5;
+    position: relative; 
+    z-index: 5; 
 }
+.percent { font-size: 2.2rem; font-weight: 800; color: var(--dark); display: block; line-height: 1; }
+.name { font-size: 0.85rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-top: 5px; }
 
-.percent { 
-    font-size: 2.2rem; 
-    font-weight: 800; 
-    color: var(--dark); 
-    display: block; 
-    line-height: 1;
-}
-
-.name { 
-    font-size: 0.85rem; 
-    color: var(--text-muted); 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    margin-top: 5px;
-}
-
-/* BARRAS BICOLOR (ESTILO MODELO) */
+/* BARRAS INFERIORES BICOLOR */
 .mini-bar-container { 
     display: flex; 
     width: 100%; 
     border-radius: 16px; 
     overflow: hidden; 
     height: 60px; 
-    margin-top: auto; 
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.06); 
 }
-
 .mini-bar { 
     flex: 1; 
     display: flex; 
     flex-direction: column; 
     justify-content: center; 
     align-items: center; 
-    padding: 8px;
-    transition: filter 0.3s ease;
+    padding: 8px; 
 }
-
 .mini-bar.bautizados { 
     background: var(--naranja-modelo); 
     color: #7b341e; 
     border-right: 1.5px solid rgba(0,0,0,0.1); 
 }
-
 .mini-bar.amigos { 
     background: var(--amarillo-modelo); 
     color: #744210; 
 }
+.mini-bar .val { font-size: 16px; font-weight: 800; }
+.mini-bar .lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.1; margin-top: 4px; }
 
-.mini-bar:hover { filter: brightness(0.95); }
-
-.mini-bar .val { 
-    font-size: 16px; 
-    font-weight: 800; 
+/* BARRA DEL RETO: ESTUDIO DE LECCIÓN (SOLO UNIDAD) */
+.full-bar {
+    width: 100%; 
+    margin-top: 15px; 
+    height: 55px; 
+    border-radius: 14px;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
 }
-
-.mini-bar .lbl { 
-    font-size: 9px; 
-    font-weight: 700; 
-    text-transform: uppercase; 
-    text-align: center; 
-    line-height: 1.1; 
-    margin-top: 4px;
-    opacity: 0.9;
+.full-bar.estudio { 
+    background: var(--verde-modelo); 
+    color: white; 
 }
+.full-bar .val { font-size: 16px; font-weight: 800; }
+.full-bar .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 2px; }
