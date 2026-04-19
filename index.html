@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MipEs Estadístico | Dashboard</title>
+    <title>Dashboard Estadístico | Semicírculos</title>
     <link rel="stylesheet" href="estilos.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -37,7 +37,7 @@
                 </select>
             </div>
 
-            <button class="btn-primary" onclick="calculateStats()">Sincronizar Manual</button>
+            <button class="btn-primary" onclick="loadData()">Sincronizar Datos</button>
         </aside>
 
         <main class="content">
@@ -47,14 +47,12 @@
 
             <section class="metrics">
                 <div class="card blue"><p>Grupos</p><h3 id="totalGroups">0</h3></div>
-                <div class="card green"><p>Asistencia %</p><h3 id="avgTotal">0%</h3></div>
-                <div class="card dark"><p>Top Performance</p><h3 id="topGroup">---</h3></div>
+                <div class="card green"><p>Asistencia General</p><h3 id="avgTotal">0%</h3></div>
+                <div class="card dark"><p>Mejor Grupo</p><h3 id="topGroup">---</h3></div>
             </section>
 
-            <section class="chart-area">
-                <div class="canvas-container">
-                    <canvas id="statsChart"></canvas>
-                </div>
+            <section class="chart-area-gauges">
+                <div id="chartsContainer" class="charts-grid"></div>
             </section>
         </main>
     </div>
