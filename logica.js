@@ -26,6 +26,7 @@ async function loadData() {
 
 function calculateStats() {
     const meeting = document.getElementById('semana').value;
+    const sheetType = document.getElementById('sheetSelect').value;
     if (!meeting || rawData.length === 0) return;
 
     const headers = Object.keys(rawData[0]);
@@ -42,16 +43,23 @@ function calculateStats() {
             stats[groupName] = { 
                 total: 0, present: 0, 
                 bautizadosTotal: 0, bautizadosPresent: 0,
-                amigosTotal: 0, amigosPresent: 0 
+                amigosTotal: 0, amigosPresent: 0,
+                estudioTotal: 0 
             };
         }
 
         const val = row[meeting] ? row[meeting].toString().toUpperCase().trim() : "";
-        const isPresent = (val === "SI" || (!isNaN(val) && parseFloat(val) > 0));
+        
+        // Lógica de asistencia (SI o 7)
+        const isPresent = (val === "SI" || val === "7");
+        // Reto: Identificar si específicamente estudió los 7 días
+        const isSeven = (val === "7");
+
         const condicion = row[condicionKey] ? row[condicionKey].toString().toLowerCase().trim() : "";
 
         stats[groupName].total++;
         if (isPresent) stats[groupName].present++;
+        if (isSeven) stats[groupName].estudioTotal++;
 
         if (condicion.includes("bautizado")) {
             stats[groupName].bautizadosTotal++;
@@ -72,10 +80,10 @@ function calculateStats() {
     const topVal = Math.max(...totalPercents);
     document.getElementById('topGroup').innerText = labels[totalPercents.indexOf(topVal)] || "---";
 
-    renderMultipleGauges(stats);
+    renderMultipleGauges(stats, sheetType);
 }
 
-function renderMultipleGauges(stats) {
+function renderMultipleGauges(stats, sheetType) {
     const container = document.getElementById('chartsContainer');
     container.innerHTML = '';
     chartInstances.forEach(c => c.destroy());
@@ -87,9 +95,19 @@ function renderMultipleGauges(stats) {
         const percent = ((g.present / g.total) * 100).toFixed(0);
         const pBautizados = g.bautizadosTotal > 0 ? ((g.bautizadosPresent / g.bautizadosTotal) * 100).toFixed(0) : 0;
         const pAmigos = g.amigosTotal > 0 ? ((g.amigosPresent / g.amigosTotal) * 100).toFixed(0) : 0;
+        const pEstudio = ((g.estudioTotal / g.total) * 100).toFixed(0);
 
         const wrapper = document.createElement('div');
         wrapper.className = 'gauge-item';
+        
+        // Solo mostrar barra verde si es Unidad de Acción
+        const estudioBar = sheetType === "Unidad" ? `
+            <div class="full-bar estudio">
+                <span class="val">${pEstudio}%</span>
+                <span class="lbl">Estudio Lección</span>
+            </div>
+        ` : '';
+
         wrapper.innerHTML = `
             <canvas id="canvas-${i}"></canvas>
             <div class="gauge-info">
@@ -106,6 +124,7 @@ function renderMultipleGauges(stats) {
                     <span class="lbl">Amigos de Esperanza</span>
                 </div>
             </div>
+            ${estudioBar}
         `;
         container.appendChild(wrapper);
 
