@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Estadístico | Semicírculos</title>
+    <title>Dashboard Estadístico | MipEs</title>
     <link rel="stylesheet" href="estilos.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,7 +15,7 @@
             
             <div class="filter-group">
                 <label>TIPO DE REUNIÓN</label>
-                <select id="sheetSelect" class="form-select border-2" onchange="loadData()">
+                <select id="sheetSelect" class="form-select" onchange="loadData()">
                     <option value="Unidad">GP: Unidad Acción</option>
                     <option value="Casas">GP: Casas</option>
                 </select>
@@ -23,7 +23,7 @@
 
             <div class="filter-group">
                 <label>REUNIÓN PROGRAMADA</label>
-                <select id="semana" class="form-select border-2" onchange="calculateStats()" required>
+                <select id="semana" class="form-select" onchange="calculateStats()" required>
                     <optgroup label="Abril">
                         <option value="Abril-1">Semana-1</option>
                         <option value="Abril-2">Semana-2</option>
@@ -42,7 +42,7 @@
 
         <main class="content">
             <header class="main-header">
-                <h2>Dashboard <span id="statusTag" class="badge">Conectando...</span></h2>
+                <h2>Dashboard <span id="statusTag" class="badge warning">Conectando...</span></h2>
             </header>
 
             <section class="metrics">
@@ -52,7 +52,8 @@
             </section>
 
             <section class="chart-area-gauges">
-                <div id="chartsContainer" class="charts-grid"></div>
+                <div id="chartsContainer" class="charts-grid">
+                    </div>
             </section>
         </main>
     </div>
