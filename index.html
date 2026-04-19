@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Estadístico GP</title>
+    <title>MipEs Estadístico</title>
     <link rel="stylesheet" href="estilos.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,20 +11,23 @@
 <body>
     <div class="app-wrapper">
         <aside class="sidebar">
-            <div class="brand">📊 ESTADISTICA GP</div>
+            <div class="brand">📊 ESTADISTICA </div>
             
             <div class="filter-group">
                 <label>TIPO DE REUNIÓN</label>
                 <select id="sheetSelect" class="form-select" onchange="loadData()">
                     <option value="Unidad">GP: Unidad AccIón</option>
-                    <option value="Casas">GP:Casas</option>
+                    <option value="Casas">GP: Casas</option>
                 </select>
             </div>
 
             <div class="filter-group">
                 <label>Reunión Programada</label>
                 <select id="meetingSelect" class="form-select">
-                    <option value="">Cargando...</option>
+                                <option value="Abril-1">Semana-1</option>
+                                <option value="Abril-2">Semana-2</option>
+                                <option value="Abril-3">Semana-3</option>
+                                <option value="Abril-4">Semana-4</option>
                 </select>
             </div>
 
