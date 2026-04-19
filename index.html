@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MipEs Estadístico</title>
+    <title>MipEs Estadístico | Dashboard</title>
     <link rel="stylesheet" href="estilos.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,29 +11,30 @@
 <body>
     <div class="app-wrapper">
         <aside class="sidebar">
-            <div class="brand">📊 ESTADISTICA </div>
+            <div class="brand">📊 ESTADÍSTICA</div>
             
             <div class="filter-group">
                 <label>TIPO DE REUNIÓN</label>
-                <select id="sheetSelect" class="form-select" onchange="loadData()">
-                    <option value="Unidad">GP: Unidad AccIón</option>
+                <select id="sheetSelect" class="form-select border-2" onchange="loadData()">
+                    <option value="Unidad">GP: Unidad Acción</option>
                     <option value="Casas">GP: Casas</option>
                 </select>
             </div>
 
             <div class="filter-group">
-                <label>Reunión Programada</label>
-                  <select id="semana" class="form-select border-2" required>
-                            <optgroup label="Abril">
-                                <option value="Abril-1">Semana-1</option>
-                                <option value="Abril-2">Semana-2</option>
-                                <option value="Abril-3">Semana-3</option>
-                                <option value="Abril-4">Semana-4</option>
-                            </optgroup>
-                            <optgroup label="Mayo">
-                                <option value="Mayo-1">Semana-1</option>
-                            </optgroup>
-                </select>
+                <label>REUNIÓN PROGRAMADA</label>
+                <select id="semana" class="form-select border-2" required>
+                    <optgroup label="Abril">
+                        <option value="Abril-1">Semana-1</option>
+                        <option value="Abril-2">Semana-2</option>
+                        <option value="Abril-3">Semana-3</option>
+                        <option value="Abril-4">Semana-4</option>
+                    </optgroup>
+                    <optgroup label="Mayo">
+                        <option value="Mayo-1">Semana-1</option>
+                        <option value="Mayo-2">Semana-2</option>
+                    </optgroup>
+                    </select>
             </div>
 
             <button class="btn-primary" onclick="calculateStats()">Sincronizar Datos</button>
@@ -41,13 +42,22 @@
 
         <main class="content">
             <header class="main-header">
-                <h2>Dashboard <span id="statusTag" class="badge">Conectando...</span></h2>
+                <h2>Dashboard <span id="statusTag" class="badge warning">Conectando...</span></h2>
             </header>
 
             <section class="metrics">
-                <div class="card blue"><p>Grupos</p><h3 id="totalGroups">0</h3></div>
-                <div class="card green"><p>Asistencia %</p><h3 id="avgTotal">0%</h3></div>
-                <div class="card dark"><p>Top Performance</p><h3 id="topGroup">---</h3></div>
+                <div class="card blue">
+                    <p>Grupos</p>
+                    <h3 id="totalGroups">0</h3>
+                </div>
+                <div class="card green">
+                    <p>Asistencia %</p>
+                    <h3 id="avgTotal">0%</h3>
+                </div>
+                <div class="card dark">
+                    <p>Top Performance</p>
+                    <h3 id="topGroup">---</h3>
+                </div>
             </section>
 
             <section class="chart-area">
@@ -57,6 +67,7 @@
             </section>
         </main>
     </div>
+
     <script src="logica.js"></script>
 </body>
 </html>
