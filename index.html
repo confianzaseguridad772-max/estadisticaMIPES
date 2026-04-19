@@ -23,7 +23,7 @@
 
             <div class="filter-group">
                 <label>REUNIÓN PROGRAMADA</label>
-                <select id="semana" class="form-select border-2" required>
+                <select id="semana" class="form-select border-2" onchange="calculateStats()" required>
                     <optgroup label="Abril">
                         <option value="Abril-1">Semana-1</option>
                         <option value="Abril-2">Semana-2</option>
@@ -34,30 +34,21 @@
                         <option value="Mayo-1">Semana-1</option>
                         <option value="Mayo-2">Semana-2</option>
                     </optgroup>
-                    </select>
+                </select>
             </div>
 
-            <button class="btn-primary" onclick="calculateStats()">Sincronizar Datos</button>
+            <button class="btn-primary" onclick="calculateStats()">Sincronizar Manual</button>
         </aside>
 
         <main class="content">
             <header class="main-header">
-                <h2>Dashboard <span id="statusTag" class="badge warning">Conectando...</span></h2>
+                <h2>Dashboard <span id="statusTag" class="badge">Conectando...</span></h2>
             </header>
 
             <section class="metrics">
-                <div class="card blue">
-                    <p>Grupos</p>
-                    <h3 id="totalGroups">0</h3>
-                </div>
-                <div class="card green">
-                    <p>Asistencia %</p>
-                    <h3 id="avgTotal">0%</h3>
-                </div>
-                <div class="card dark">
-                    <p>Top Performance</p>
-                    <h3 id="topGroup">---</h3>
-                </div>
+                <div class="card blue"><p>Grupos</p><h3 id="totalGroups">0</h3></div>
+                <div class="card green"><p>Asistencia %</p><h3 id="avgTotal">0%</h3></div>
+                <div class="card dark"><p>Top Performance</p><h3 id="topGroup">---</h3></div>
             </section>
 
             <section class="chart-area">
@@ -67,7 +58,6 @@
             </section>
         </main>
     </div>
-
     <script src="logica.js"></script>
 </body>
 </html>
