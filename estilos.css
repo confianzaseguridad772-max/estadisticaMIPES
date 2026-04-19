@@ -1,11 +1,13 @@
-/* --- VARIABLES Y CONFIGURACIÓN --- */
+/* --- VARIABLES Y PALETA DE COLORES --- */
 :root {
     --primary: #4f46e5;
     --dark: #1e293b;
     --bg: #f8fafc;
-    --naranja-claro: #fbd38d; /* Color modelo Bautizados */
-    --amarillo-claro: #fefcbf; /* Color modelo Amigos */
+    --naranja-modelo: #fbd38d; /* Bautizados */
+    --amarillo-modelo: #fefcbf; /* Amigos de Esperanza */
     --text-muted: #64748b;
+    --shadow-sm: 0 4px 6px rgba(0,0,0,0.02);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.05);
 }
 
 * { 
@@ -18,10 +20,10 @@
 body { 
     background: var(--bg); 
     color: var(--dark);
-    line-height: 1.5;
+    overflow-x: hidden;
 }
 
-/* --- LAYOUT PRINCIPAL --- */
+/* --- ESTRUCTURA (LAYOUT) --- */
 .app-wrapper { 
     display: flex; 
     flex-direction: column; 
@@ -36,134 +38,129 @@ body {
         position: sticky; 
         top: 0; 
         background: var(--dark); 
-        padding: 30px; 
+        padding: 40px 25px; 
         color: white;
-        box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        box-shadow: 4px 0 15px rgba(0,0,0,0.1);
     }
 }
 
 /* --- SIDEBAR --- */
 .brand { 
-    font-size: 20px; 
+    font-size: 22px; 
     font-weight: 700; 
-    margin-bottom: 35px; 
+    margin-bottom: 40px; 
     color: #818cf8; 
     text-align: center; 
-    letter-spacing: 1px;
     border-bottom: 1px solid #334155;
     padding-bottom: 20px;
+    letter-spacing: 1px;
 }
 
-.filter-group { margin-bottom: 22px; }
+.filter-group { margin-bottom: 30px; }
 .filter-group label { 
     display: block; 
     font-size: 11px; 
     color: #94a3b8; 
     font-weight: 600; 
-    margin-bottom: 10px; 
+    margin-bottom: 12px; 
     text-transform: uppercase; 
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
 }
 
 .form-select { 
     width: 100%; 
-    padding: 12px; 
-    border-radius: 10px; 
+    padding: 14px; 
+    border-radius: 12px; 
     border: 2px solid #334155; 
     background: #1e293b; 
     color: white; 
     outline: none; 
     cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 14px;
 }
 
-.form-select:focus { border-color: var(--primary); }
-
-.btn-primary { 
-    width: 100%; 
-    padding: 15px; 
-    border-radius: 12px; 
-    border: none; 
-    background: var(--primary); 
-    color: white; 
-    font-weight: 700; 
-    cursor: pointer; 
-    transition: 0.3s;
-    margin-top: 10px;
+.form-select:focus { 
+    border-color: var(--primary); 
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
 }
 
-.btn-primary:hover { 
-    background: #4338ca; 
-    transform: translateY(-2px); 
-}
-
-/* --- DASHBOARD CONTENT --- */
+/* --- ÁREA DE CONTENIDO --- */
 .content { flex: 1; padding: 40px; }
 
-.badge { font-size: 11px; padding: 5px 14px; border-radius: 20px; font-weight: 600; }
+.main-header { margin-bottom: 35px; }
+.main-header h2 { font-size: 26px; display: flex; align-items: center; gap: 15px; }
+
+.badge { font-size: 12px; padding: 6px 16px; border-radius: 30px; font-weight: 600; }
 .badge.success { background: #dcfce7; color: #166534; }
 .badge.warning { background: #fef9c3; color: #854d0e; }
 .badge.danger { background: #fee2e2; color: #991b1b; }
 
+/* TARJETAS DE MÉTRICAS SUPERIORES */
 .metrics { 
     display: grid; 
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-    gap: 20px; 
-    margin-bottom: 40px; 
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+    gap: 25px; 
+    margin-bottom: 45px; 
 }
 
 .card { 
     background: white; 
     padding: 25px; 
-    border-radius: 18px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
+    border-radius: 20px; 
+    box-shadow: var(--shadow-sm);
+    border-left: 6px solid transparent;
+    transition: transform 0.3s ease;
 }
 
-.card p { font-size: 12px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
-.card h3 { font-size: 26px; color: var(--dark); margin-top: 8px; }
+.card:hover { transform: translateY(-5px); }
+.card.blue { border-left-color: #3b82f6; }
+.card.green { border-left-color: #10b981; }
+.card.dark { background: var(--dark); color: white; border-left-color: var(--primary); }
 
-.card.blue { border-left: 5px solid #3b82f6; }
-.card.green { border-left: 5px solid #10b981; }
-.card.dark { background: var(--dark); color: white; border-left: 5px solid var(--primary); }
+.card p { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
 .card.dark p { color: #94a3b8; }
-.card.dark h3 { color: white; }
+.card h3 { font-size: 28px; font-weight: 700; }
 
-/* --- GRID DE GRÁFICOS (MODELO PREMIUM) --- */
+/* --- DISEÑO DE GRÁFICOS (GAUGES + BARRAS) --- */
 .charts-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); 
-    gap: 30px; 
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+    gap: 35px; 
 }
 
 .gauge-item { 
     background: white; 
-    padding: 30px 20px; 
-    border-radius: 28px; 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.03); 
+    padding: 35px 25px; 
+    border-radius: 30px; 
+    box-shadow: var(--shadow-lg); 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .gauge-item:hover { 
-    transform: translateY(-10px); 
-    box-shadow: 0 15px 30px rgba(0,0,0,0.08); 
+    transform: translateY(-12px); 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1); 
 }
 
 canvas { 
-    max-height: 150px; 
+    max-height: 160px; 
     width: 100% !important; 
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.05));
 }
 
 .gauge-info { 
-    margin-top: -50px; /* Posiciona el porcentaje dentro del arco */
+    margin-top: -55px; /* Ajuste para centrar texto en el arco */
     text-align: center; 
-    margin-bottom: 20px; 
+    margin-bottom: 25px; 
+    position: relative;
+    z-index: 5;
 }
 
 .percent { 
-    font-size: 2rem; 
+    font-size: 2.2rem; 
     font-weight: 800; 
     color: var(--dark); 
     display: block; 
@@ -171,22 +168,22 @@ canvas {
 }
 
 .name { 
-    font-size: 0.8rem; 
+    font-size: 0.85rem; 
     color: var(--text-muted); 
     font-weight: 700; 
     text-transform: uppercase; 
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
-/* --- BARRAS BICOLOR INFERIORES --- */
+/* BARRAS BICOLOR (ESTILO MODELO) */
 .mini-bar-container { 
     display: flex; 
     width: 100%; 
-    border-radius: 14px; 
+    border-radius: 16px; 
     overflow: hidden; 
-    height: 55px; 
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-    margin-top: auto;
+    height: 60px; 
+    margin-top: auto; 
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
 }
 
 .mini-bar { 
@@ -195,22 +192,25 @@ canvas {
     flex-direction: column; 
     justify-content: center; 
     align-items: center; 
-    padding: 5px;
+    padding: 8px;
+    transition: filter 0.3s ease;
 }
 
 .mini-bar.bautizados { 
-    background: var(--naranja-claro); 
+    background: var(--naranja-modelo); 
     color: #7b341e; 
-    border-right: 1.5px solid rgba(0,0,0,0.08); 
+    border-right: 1.5px solid rgba(0,0,0,0.1); 
 }
 
 .mini-bar.amigos { 
-    background: var(--amarillo-claro); 
+    background: var(--amarillo-modelo); 
     color: #744210; 
 }
 
+.mini-bar:hover { filter: brightness(0.95); }
+
 .mini-bar .val { 
-    font-size: 15px; 
+    font-size: 16px; 
     font-weight: 800; 
 }
 
@@ -219,7 +219,7 @@ canvas {
     font-weight: 700; 
     text-transform: uppercase; 
     text-align: center; 
-    line-height: 1; 
-    margin-top: 3px;
+    line-height: 1.1; 
+    margin-top: 4px;
     opacity: 0.9;
 }
