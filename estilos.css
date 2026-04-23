@@ -6,6 +6,7 @@
     --naranja-modelo: #fbd38d; /* Color Bautizados */
     --amarillo-modelo: #fefcbf; /* Color Amigos */
     --verde-modelo: #10b981;   /* Color Estudio Lección */
+    --rojo-meta: #ef4444;      /* NUEVO: Color para tendencias negativas y metas */
     --text-muted: #64748b;
     --shadow-premium: 0 10px 25px rgba(0,0,0,0.05);
 }
@@ -103,12 +104,21 @@ body {
     border-radius: 20px; 
     box-shadow: 0 4px 6px rgba(0,0,0,0.02); 
     border-left: 6px solid transparent; 
+    transition: all 0.3s ease;
 }
+
+/* NUEVO: Colores de tendencia para las tarjetas */
+.card.trend-up { border-left-color: var(--verde-modelo); }
+.card.trend-down { border-left-color: var(--rojo-meta); }
 .card.blue { border-left-color: #3b82f6; }
 .card.green { border-left-color: #10b981; }
 .card.dark { background: var(--dark); color: white; border-left-color: var(--primary); }
+
 .card p { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
 .card h3 { font-size: 28px; font-weight: 700; }
+
+/* NUEVO: Estilo para los textos pequeños debajo del número principal */
+.card small { font-weight: 600; font-size: 11px; display: block; margin-top: 5px; }
 
 /* --- GRÁFICOS (GAUGES + BARRAS) --- */
 .charts-grid { 
@@ -191,7 +201,7 @@ canvas { max-height: 160px; width: 100% !important; }
 .full-bar .val { font-size: 16px; font-weight: 800; }
 .full-bar .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 2px; }
 
-/* --- NUEVO: ESTILO PARA GRÁFICO HISTÓRICO --- */
+/* --- GRÁFICO HISTÓRICO --- */
 .history-container {
     margin-top: 50px;
     width: 100%;
