@@ -11,15 +11,19 @@
 <body>
     <div class="app-wrapper">
         <aside class="sidebar">
-            <div class="brand">📊 MipEs ANALYTICS</div>
+            <div class="brand">📊 ESTADÍSTICA</div>
+            
             <div class="filter-group">
                 <label>TIPO DE REUNIÓN</label>
                 <select id="sheetSelect" class="form-select" onchange="loadData()">
                     <option value="Unidad">GP: Unidad Acción</option>
                     <option value="Casas">GP: Casas</option>
                 </select>
-                <label>REUNIÓN ACTUAL</label>
-                <select id="semana" class="form-select" onchange="calculateStats()">
+            </div>
+
+            <div class="filter-group">
+                <label>REUNIÓN PROGRAMADA</label>
+                <select id="semana" class="form-select" onchange="calculateStats()" required>
                     <optgroup label="Abril">
                         <option value="Abril-1">Semana-1</option>
                         <option value="Abril-2">Semana-2</option>
@@ -35,33 +39,23 @@
         </aside>
 
         <main class="content">
-            <header>
-                <h2>Dashboard <span id="statusTag" class="badge warning">Cargando...</span></h2>
+            <header class="main-header">
+                <h2>Dashboard <span id="statusTag" class="badge warning">Conectando...</span></h2>
             </header>
 
             <section class="metrics">
-                <div class="card" id="cardAsistencia">
-                    <p>Asistencia General</p>
-                    <h3 id="avgTotal">0%</h3>
-                    <small id="trendLabel">Calculando tendencia...</small>
-                </div>
-                <div class="card">
-                    <p>Retención Miembros</p>
-                    <h3 id="retencionVal">0%</h3>
-                    <small>Fidelidad vs semana anterior</small>
-                </div>
-                <div class="card dark">
-                    <p>🏆 Top Esfuerzo Grupal</p>
-                    <h3 id="topGroup">---</h3>
-                    <small>Mejor balance Asis/Estudio</small>
-                </div>
+                <div class="card blue"><p>Grupos</p><h3 id="totalGroups">0</h3></div>
+                <div class="card green"><p>Asistencia General</p><h3 id="avgTotal">0%</h3></div>
+                <div class="card dark"><p>Mejor Grupo</p><h3 id="topGroup">---</h3></div>
             </section>
 
-            <div id="chartsContainer" class="charts-grid"></div>
+            <section class="chart-area-gauges">
+                <div id="chartsContainer" class="charts-grid"></div>
+            </section>
 
-            <section class="history-card">
-                <p style="font-weight: 700; color: var(--text-muted); font-size: 12px; text-transform: uppercase;">Comparativa Histórica y Meta (90%)</p>
-                <div style="height: 350px; margin-top: 20px;">
+            <section class="history-container">
+                <div class="history-card">
+                    <p style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Comparativa Histórica de Asistencia (%)</p>
                     <canvas id="historyChart"></canvas>
                 </div>
             </section>
