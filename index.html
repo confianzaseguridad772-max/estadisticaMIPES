@@ -36,6 +36,14 @@
                     </optgroup>
                 </select>
             </div>
+
+            <div class="filter-group" style="margin-top: auto; padding-top: 20px;">
+                <a href="https://confianzaseguridad772-max.github.io/estadisticaMIPES/" 
+                   target="_blank" 
+                   class="btn-termometro">
+                   🌡️ Termómetro Espiritual
+                </a>
+            </div>
         </aside>
 
         <main class="content">
@@ -44,9 +52,18 @@
             </header>
 
             <section class="metrics">
-                <div class="card blue"><p>Grupos</p><h3 id="totalGroups">0</h3></div>
-                <div class="card green"><p>Asistencia General</p><h3 id="avgTotal">0%</h3></div>
-                <div class="card dark"><p>Mejor Grupo</p><h3 id="topGroup">---</h3></div>
+                <div class="card blue">
+                    <p>Grupos</p>
+                    <h3 id="totalGroups">0</h3>
+                </div>
+                <div class="card green">
+                    <p>Asistencia General</p>
+                    <h3 id="avgTotal">0%</h3>
+                </div>
+                <div class="card dark">
+                    <p>Mejor Grupo</p>
+                    <h3 id="topGroup">---</h3>
+                </div>
             </section>
 
             <section class="chart-area-gauges">
@@ -55,8 +72,10 @@
 
             <section class="history-container">
                 <div class="history-card">
-                    <p style="font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Comparativa Histórica de Asistencia (%)</p>
-                    <canvas id="historyChart"></canvas>
+                    <p class="history-title">Comparativa Histórica de Asistencia (%)</p>
+                    <div style="height: 350px;">
+                        <canvas id="historyChart"></canvas>
+                    </div>
                 </div>
             </section>
         </main>
