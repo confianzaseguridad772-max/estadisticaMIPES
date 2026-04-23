@@ -1,6 +1,7 @@
 const URL_WEB_APP = 'https://script.google.com/macros/s/AKfycbytEYgGRugIClUqJogRkyjqz2K1wAfB7ZQoRpehr_cdmQHlOpD5NjjHKSR-_OeQ4a52/exec';
 let rawData = [];
 let chartInstances = [];
+let historyChartInstance = null; // Instancia para el gráfico histórico
 
 async function loadData() {
     const sheet = document.getElementById('sheetSelect').value;
@@ -17,6 +18,7 @@ async function loadData() {
             status.innerText = "Conectado";
             status.className = "badge success";
             calculateStats();
+            renderHistoryChart(); // Llamada al gráfico histórico independiente
         }
     } catch (error) {
         status.innerText = "Error de Enlace";
@@ -75,7 +77,6 @@ function calculateStats() {
     // --- LÓGICA DE MEJOR GRUPO AJUSTADA ---
     let topGroupName = "---";
     if (sheetType === "Unidad") {
-        // En Unidad, el mejor grupo es el que tiene mayor % de Estudio de Lección
         let maxEstudio = -1;
         labels.forEach(l => {
             const pEstudio = (stats[l].estudioTotal / stats[l].total) * 100;
@@ -85,13 +86,11 @@ function calculateStats() {
             }
         });
     } else {
-        // En Casas, el mejor grupo sigue siendo por Asistencia General
         const totalPercents = labels.map(l => (stats[l].present / stats[l].total) * 100);
         const topVal = Math.max(...totalPercents);
         topGroupName = labels[totalPercents.indexOf(topVal)] || "---";
     }
 
-    // Promedio de asistencia general (esto no cambia)
     const totalPercentsAsistencia = labels.map(l => (stats[l].present / stats[l].total) * 100);
     const avg = (totalPercentsAsistencia.reduce((a, b) => a + b, 0) / (labels.length || 1)).toFixed(1);
 
@@ -140,7 +139,7 @@ function renderMultipleGauges(stats, sheetType) {
                 </div>
                 <div class="mini-bar amigos">
                     <span class="val">${pAmigos}%</span>
-                    <span class="lbl">Amigos de Esperanza</span>
+                    <span class="lbl">Amigos</span>
                 </div>
             </div>
             ${estudioBar}
@@ -169,6 +168,49 @@ function renderMultipleGauges(stats, sheetType) {
         chartInstances.push(chart);
         i++;
     }
+}
+
+// --- NUEVA FUNCIÓN: RENDERIZA EL GRÁFICO HISTÓRICO COMPARATIVO ---
+function renderHistoryChart() {
+    const ctx = document.getElementById('historyChart').getContext('2d');
+    if (historyChartInstance) historyChartInstance.destroy();
+
+    const allKeys = Object.keys(rawData[0]);
+    // Busca columnas que tengan "-" (ej. Abril-1, Mayo-2)
+    const weekKeys = allKeys.filter(k => k.includes("-")); 
+    const groupKey = allKeys.find(k => k.toLowerCase().includes("grupo"));
+    const groups = [...new Set(rawData.map(row => row[groupKey]))].filter(g => g && g !== "sn");
+
+    const datasets = groups.map((groupName, index) => {
+        const groupData = weekKeys.map(week => {
+            const members = rawData.filter(r => r[groupKey] === groupName);
+            const present = members.filter(r => {
+                const val = r[week] ? r[week].toString().toUpperCase().trim() : "";
+                return (val === "SI" || (parseInt(val) >= 1 && parseInt(val) <= 7));
+            }).length;
+            return ((present / (members.length || 1)) * 100).toFixed(1);
+        });
+        const hue = (index * 137.5) % 360; 
+        return { 
+            label: groupName, 
+            data: groupData, 
+            borderColor: `hsl(${hue}, 70%, 50%)`, 
+            backgroundColor: `transparent`,
+            tension: 0.3, 
+            fill: false 
+        };
+    });
+
+    historyChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: { labels: weekKeys, datasets: datasets },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+        }
+    });
 }
 
 window.onload = loadData;
