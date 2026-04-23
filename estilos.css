@@ -1,11 +1,12 @@
 /* --- VARIABLES Y CONFIGURACIÓN --- */
 :root {
     --primary: #4f46e5;
+    --primary-light: #818cf8;
     --dark: #1e293b;
     --bg: #f8fafc;
-    --naranja-modelo: #fbd38d; /* Color Bautizados */
-    --amarillo-modelo: #fefcbf; /* Color Amigos */
-    --verde-modelo: #10b981;   /* Color Estudio Lección */
+    --naranja-modelo: #fbd38d; /* Bautizados */
+    --amarillo-modelo: #fefcbf; /* Amigos */
+    --verde-modelo: #10b981;   /* Estudio Lección */
     --text-muted: #64748b;
     --shadow-premium: 0 10px 25px rgba(0,0,0,0.05);
 }
@@ -41,6 +42,8 @@ body {
         padding: 40px 25px; 
         color: white;
         box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+        display: flex;
+        flex-direction: column;
     }
 }
 
@@ -49,14 +52,14 @@ body {
     font-size: 22px; 
     font-weight: 700; 
     margin-bottom: 40px; 
-    color: #818cf8; 
+    color: var(--primary-light); 
     text-align: center; 
     border-bottom: 1px solid #334155;
     padding-bottom: 20px;
     letter-spacing: 1px;
 }
 
-.filter-group { margin-bottom: 30px; }
+.filter-group { margin-bottom: 25px; }
 .filter-group label { 
     display: block; 
     font-size: 11px; 
@@ -81,6 +84,29 @@ body {
 }
 
 .form-select:focus { border-color: var(--primary); }
+
+/* BOTÓN TERMÓMETRO */
+.btn-termometro {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-termometro:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4);
+    filter: brightness(1.1);
+}
 
 /* --- CONTENIDO --- */
 .content { flex: 1; padding: 40px; }
@@ -107,13 +133,13 @@ body {
 .card.blue { border-left-color: #3b82f6; }
 .card.green { border-left-color: #10b981; }
 .card.dark { background: var(--dark); color: white; border-left-color: var(--primary); }
-.card p { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+.card p { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
 .card h3 { font-size: 28px; font-weight: 700; }
 
 /* --- GRÁFICOS (GAUGES + BARRAS) --- */
 .charts-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
     gap: 35px; 
 }
 
@@ -131,7 +157,7 @@ body {
 
 .gauge-item:hover { transform: translateY(-10px); }
 
-canvas { max-height: 160px; width: 100% !important; }
+canvas { max-width: 100%; height: auto !important; }
 
 .gauge-info { 
     margin-top: -55px; 
@@ -160,19 +186,11 @@ canvas { max-height: 160px; width: 100% !important; }
     align-items: center; 
     padding: 8px; 
 }
-.mini-bar.bautizados { 
-    background: var(--naranja-modelo); 
-    color: #7b341e; 
-    border-right: 1.5px solid rgba(0,0,0,0.1); 
-}
-.mini-bar.amigos { 
-    background: var(--amarillo-modelo); 
-    color: #744210; 
-}
+.mini-bar.bautizados { background: var(--naranja-modelo); color: #7b341e; border-right: 1.5px solid rgba(0,0,0,0.1); }
+.mini-bar.amigos { background: var(--amarillo-modelo); color: #744210; }
 .mini-bar .val { font-size: 16px; font-weight: 800; }
 .mini-bar .lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.1; margin-top: 4px; }
 
-/* BARRA DEL RETO: ESTUDIO DE LECCIÓN */
 .full-bar {
     width: 100%; 
     margin-top: 15px; 
@@ -184,26 +202,16 @@ canvas { max-height: 160px; width: 100% !important; }
     align-items: center;
     box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);
 }
-.full-bar.estudio { 
-    background: var(--verde-modelo); 
-    color: white; 
-}
+.full-bar.estudio { background: var(--verde-modelo); color: white; }
 .full-bar .val { font-size: 16px; font-weight: 800; }
 .full-bar .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 2px; }
 
-/* --- NUEVO: ESTILO PARA GRÁFICO HISTÓRICO --- */
-.history-container {
-    margin-top: 50px;
-    width: 100%;
+/* --- HISTÓRICO --- */
+.history-container { margin-top: 50px; width: 100%; }
+.history-card { 
+    background: white; 
+    padding: 30px; 
+    border-radius: 25px; 
+    box-shadow: var(--shadow-premium); 
 }
-.history-card {
-    background: white;
-    padding: 30px;
-    border-radius: 25px;
-    box-shadow: var(--shadow-premium);
-    min-height: 450px;
-}
-#historyChart {
-    max-height: 350px !important;
-    margin-top: 20px;
-}
+.history-title { font-size: 12px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; margin-bottom: 20px; }
