@@ -51,24 +51,16 @@ function calculateStats() {
         const val = row[meeting] ? row[meeting].toString().toUpperCase().trim() : "";
         const condicion = row[condicionKey] ? row[condicionKey].toString().toLowerCase().trim() : "";
         
-        // --- LÓGICA DE ASISTENCIA ---
-        // Se considera presente si es "SI" o un número entre 1 y 7
         const numVal = parseInt(val);
         const isPresent = (val === "SI" || (!isNaN(numVal) && numVal >= 1 && numVal <= 7));
         
-        // --- LÓGICA DE ESTUDIO DE LECCIÓN (SOLO BAUTIZADOS) ---
-        // Solo cuenta si el valor es "7" Y la persona es "Bautizado"
+        // Estudio de lección: Solo Bautizados con nota 7
         const isSevenBautizado = (val === "7" && condicion.includes("bautizado"));
 
         stats[groupName].total++;
-        
-        // Contador para el Gauge principal (Arco azul)
         if (isPresent) stats[groupName].present++;
-        
-        // Contador para el Reto de Estudio (Barra verde)
         if (isSevenBautizado) stats[groupName].estudioTotal++;
 
-        // Separación para mini-barras inferiores
         if (condicion.includes("bautizado")) {
             stats[groupName].bautizadosTotal++;
             if (isPresent) stats[groupName].bautizadosPresent++;
@@ -79,15 +71,33 @@ function calculateStats() {
     });
 
     const labels = Object.keys(stats);
-    const totalPercents = labels.map(l => (stats[l].present / stats[l].total) * 100);
-
-    // Actualización de KPIs
-    document.getElementById('totalGroups').innerText = labels.length;
-    const avg = (totalPercents.reduce((a, b) => a + b, 0) / (labels.length || 1)).toFixed(1);
-    document.getElementById('avgTotal').innerText = avg + "%";
     
-    const topVal = Math.max(...totalPercents);
-    document.getElementById('topGroup').innerText = labels[totalPercents.indexOf(topVal)] || "---";
+    // --- LÓGICA DE MEJOR GRUPO AJUSTADA ---
+    let topGroupName = "---";
+    if (sheetType === "Unidad") {
+        // En Unidad, el mejor grupo es el que tiene mayor % de Estudio de Lección
+        let maxEstudio = -1;
+        labels.forEach(l => {
+            const pEstudio = (stats[l].estudioTotal / stats[l].total) * 100;
+            if (pEstudio > maxEstudio) {
+                maxEstudio = pEstudio;
+                topGroupName = l;
+            }
+        });
+    } else {
+        // En Casas, el mejor grupo sigue siendo por Asistencia General
+        const totalPercents = labels.map(l => (stats[l].present / stats[l].total) * 100);
+        const topVal = Math.max(...totalPercents);
+        topGroupName = labels[totalPercents.indexOf(topVal)] || "---";
+    }
+
+    // Promedio de asistencia general (esto no cambia)
+    const totalPercentsAsistencia = labels.map(l => (stats[l].present / stats[l].total) * 100);
+    const avg = (totalPercentsAsistencia.reduce((a, b) => a + b, 0) / (labels.length || 1)).toFixed(1);
+
+    document.getElementById('totalGroups').innerText = labels.length;
+    document.getElementById('avgTotal').innerText = avg + "%";
+    document.getElementById('topGroup').innerText = topGroupName;
 
     renderMultipleGauges(stats, sheetType);
 }
@@ -105,14 +115,11 @@ function renderMultipleGauges(stats, sheetType) {
         const percent = ((g.present / g.total) * 100).toFixed(0);
         const pBautizados = g.bautizadosTotal > 0 ? ((g.bautizadosPresent / g.bautizadosTotal) * 100).toFixed(0) : 0;
         const pAmigos = g.amigosTotal > 0 ? ((g.amigosPresent / g.amigosTotal) * 100).toFixed(0) : 0;
-        
-        // El porcentaje de estudio se calcula sobre el total del grupo
         const pEstudio = ((g.estudioTotal / g.total) * 100).toFixed(0);
 
         const wrapper = document.createElement('div');
         wrapper.className = 'gauge-item';
         
-        // La barra de estudio solo se inyecta si estamos viendo la hoja de "Unidad"
         const estudioBar = sheetType === "Unidad" ? `
             <div class="full-bar estudio">
                 <span class="val">${pEstudio}%</span>
