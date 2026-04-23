@@ -88,6 +88,7 @@ body {
 .badge { font-size: 12px; padding: 6px 16px; border-radius: 30px; font-weight: 600; }
 .badge.success { background: #dcfce7; color: #166534; }
 .badge.warning { background: #fef9c3; color: #854d0e; }
+.badge.danger { background: #fee2e2; color: #991b1b; }
 
 .metrics { 
     display: grid; 
@@ -125,7 +126,7 @@ body {
     flex-direction: column; 
     align-items: center; 
     transition: 0.3s ease;
-    min-height: 410px; /* Espacio extra para la barra del reto */
+    min-height: 410px; 
 }
 
 .gauge-item:hover { transform: translateY(-10px); }
@@ -171,7 +172,7 @@ canvas { max-height: 160px; width: 100% !important; }
 .mini-bar .val { font-size: 16px; font-weight: 800; }
 .mini-bar .lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; text-align: center; line-height: 1.1; margin-top: 4px; }
 
-/* BARRA DEL RETO: ESTUDIO DE LECCIÓN (SOLO UNIDAD) */
+/* BARRA DEL RETO: ESTUDIO DE LECCIÓN */
 .full-bar {
     width: 100%; 
     margin-top: 15px; 
@@ -189,3 +190,20 @@ canvas { max-height: 160px; width: 100% !important; }
 }
 .full-bar .val { font-size: 16px; font-weight: 800; }
 .full-bar .lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; margin-top: 2px; }
+
+/* --- NUEVO: ESTILO PARA GRÁFICO HISTÓRICO --- */
+.history-container {
+    margin-top: 50px;
+    width: 100%;
+}
+.history-card {
+    background: white;
+    padding: 30px;
+    border-radius: 25px;
+    box-shadow: var(--shadow-premium);
+    min-height: 450px;
+}
+#historyChart {
+    max-height: 350px !important;
+    margin-top: 20px;
+}
