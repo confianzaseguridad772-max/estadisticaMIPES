@@ -49,27 +49,26 @@ function calculateStats() {
         }
 
         const val = row[meeting] ? row[meeting].toString().toUpperCase().trim() : "";
+        const condicion = row[condicionKey] ? row[condicionKey].toString().toLowerCase().trim() : "";
         
-        // --- LÓGICA DE ASISTENCIA CORREGIDA ---
-        // Se considera presente si dice "SI" (Casas) 
-        // o si es un número del 1 al 7 (Unidad)
+        // --- LÓGICA DE ASISTENCIA ---
+        // Se considera presente si es "SI" o un número entre 1 y 7
         const numVal = parseInt(val);
         const isPresent = (val === "SI" || (!isNaN(numVal) && numVal >= 1 && numVal <= 7));
         
-        // El reto de Estudio de Lección sigue siendo solo para los que marcaron "7"
-        const isSeven = (val === "7");
-
-        const condicion = row[condicionKey] ? row[condicionKey].toString().toLowerCase().trim() : "";
+        // --- LÓGICA DE ESTUDIO DE LECCIÓN (SOLO BAUTIZADOS) ---
+        // Solo cuenta si el valor es "7" Y la persona es "Bautizado"
+        const isSevenBautizado = (val === "7" && condicion.includes("bautizado"));
 
         stats[groupName].total++;
         
-        // Sumar a asistencia general
+        // Contador para el Gauge principal (Arco azul)
         if (isPresent) stats[groupName].present++;
         
-        // Sumar al reto de estudio (Barra verde)
-        if (isSeven) stats[groupName].estudioTotal++;
+        // Contador para el Reto de Estudio (Barra verde)
+        if (isSevenBautizado) stats[groupName].estudioTotal++;
 
-        // Clasificación por condición (Bautizados vs Amigos)
+        // Separación para mini-barras inferiores
         if (condicion.includes("bautizado")) {
             stats[groupName].bautizadosTotal++;
             if (isPresent) stats[groupName].bautizadosPresent++;
@@ -82,7 +81,7 @@ function calculateStats() {
     const labels = Object.keys(stats);
     const totalPercents = labels.map(l => (stats[l].present / stats[l].total) * 100);
 
-    // Actualizar KPIs superiores
+    // Actualización de KPIs
     document.getElementById('totalGroups').innerText = labels.length;
     const avg = (totalPercents.reduce((a, b) => a + b, 0) / (labels.length || 1)).toFixed(1);
     document.getElementById('avgTotal').innerText = avg + "%";
@@ -97,7 +96,6 @@ function renderMultipleGauges(stats, sheetType) {
     const container = document.getElementById('chartsContainer');
     container.innerHTML = '';
     
-    // Limpiar instancias previas para evitar errores de memoria de Chart.js
     chartInstances.forEach(c => c.destroy());
     chartInstances = [];
 
@@ -114,11 +112,11 @@ function renderMultipleGauges(stats, sheetType) {
         const wrapper = document.createElement('div');
         wrapper.className = 'gauge-item';
         
-        // Barra verde: solo visible si el select es "Unidad"
+        // La barra de estudio solo se inyecta si estamos viendo la hoja de "Unidad"
         const estudioBar = sheetType === "Unidad" ? `
             <div class="full-bar estudio">
                 <span class="val">${pEstudio}%</span>
-                <span class="lbl">Estudio Lección (7/7)</span>
+                <span class="lbl">Estudio Lección (Bautizados 7/7)</span>
             </div>
         ` : '';
 
@@ -158,10 +156,7 @@ function renderMultipleGauges(stats, sheetType) {
                 cutout: '80%',
                 responsive: true,
                 maintainAspectRatio: true,
-                plugins: { 
-                    legend: { display: false }, 
-                    tooltip: { enabled: false } 
-                }
+                plugins: { legend: { display: false }, tooltip: { enabled: false } }
             }
         });
         chartInstances.push(chart);
