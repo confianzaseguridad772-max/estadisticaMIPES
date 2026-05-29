@@ -1,4 +1,4 @@
-const URL_WEB_APP = 'https://script.google.com/macros/s/AKfycbytEYgGRugIClUqJogRkyjqz2K1wAfB7ZQoRpehr_cdmQHlOpD5NjjHKSR-_OeQ4a52/exec';
+const URL_WEB_APP = 'https://script.google.com/macros/s/AKfycbwk5ve3CfUc5WyXrmb5NVqKGmlJIL2fkHJqIyyWRrnyTHd1Oe4xeesrdabs4yZAtRZf/exec';
 let rawData = [];
 let chartInstances = [];
 let historyChartInstance = null; // Instancia para el gráfico histórico
